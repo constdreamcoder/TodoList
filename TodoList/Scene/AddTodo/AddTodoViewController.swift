@@ -25,6 +25,7 @@ final class AddTodoViewController: UIViewController {
         
         tableView.backgroundColor = .clear
         tableView.isScrollEnabled = false
+    
         return tableView
     }()
     
@@ -102,27 +103,30 @@ extension AddTodoViewController: UIViewControllerConfigurationProtocol {
 
 extension AddTodoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 2 {
+            return 16.0
+        }
         return UITableView.automaticDimension
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let weightIndex = placeholderList.count
+        let weight = placeholderList.count + 1
         
-        if indexPath.row == (0 + weightIndex) {
+        if indexPath.row == (0 + weight) {
             let dateVC = DateViewController()
-            dateVC.navigationItemTitle = titleList[indexPath.row - weightIndex]
+            dateVC.navigationItemTitle = titleList[indexPath.row - weight]
             dateVC.transferDate = { selectedDate in
                 self.selectedDateString = selectedDate
                 tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             navigationController?.pushViewController(dateVC, animated: true)
-        } else if indexPath.row == (1 + weightIndex) {
+        } else if indexPath.row == (1 + weight) {
             let tagVC = TagViewController()
-            tagVC.navigationItemTitle = titleList[indexPath.row - weightIndex]
+            tagVC.navigationItemTitle = titleList[indexPath.row - weight]
             navigationController?.pushViewController(tagVC, animated: true)
-        } else if indexPath.row == (2 + weightIndex) {
+        } else if indexPath.row == (2 + weight) {
             let priorityVC = PriorityViewController()
-            priorityVC.navigationItemTitle = titleList[indexPath.row - weightIndex]
+            priorityVC.navigationItemTitle = titleList[indexPath.row - weight]
             priorityVC.delegate = self
             navigationController?.pushViewController(priorityVC, animated: true)
         }
@@ -131,7 +135,7 @@ extension AddTodoViewController: UITableViewDelegate {
 
 extension AddTodoViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return (placeholderList.count + titleList.count)
+        return (placeholderList.count + titleList.count) + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -151,10 +155,14 @@ extension AddTodoViewController: UITableViewDataSource {
             }
             
             return cell
+        } else if indexPath.row == 2 {
+            let cell = UITableViewCell()
+            cell.backgroundColor = .clear
+            return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: BottomTableViewCell.identifier, for: indexPath) as? BottomTableViewCell else { return UITableViewCell() }
             
-            let weight = placeholderList.count
+            let weight = placeholderList.count + 1
             
             cell.titleLabel.text = titleList[indexPath.row - weight]
             if indexPath.row == 0 + weight {
@@ -192,6 +200,7 @@ extension AddTodoViewController: TableViewCellDelegate {
 extension AddTodoViewController: PriorityTransferDelegate {
     func transferNewPriority(priority: String) {
         self.newPrioirty = priority
-        topTableView.reloadRows(at: [IndexPath(row: placeholderList.count + 2, section: 0)], with: .automatic)
+        let weight = placeholderList.count + 1
+        topTableView.reloadRows(at: [IndexPath(row: weight + 2, section: 0)], with: .automatic)
     }
 }

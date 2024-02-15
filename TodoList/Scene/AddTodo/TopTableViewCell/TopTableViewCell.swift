@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 
 protocol TableViewCellDelegate: AnyObject {
+    func transferText(text: String, titleOrMemo: TitleOrMemo)
     func updateTextViewHeight(_ cell: TopTableViewCell,_ textView:UITextView)
 }
 
@@ -32,7 +33,13 @@ final class TopTableViewCell: UITableViewCell {
     }
     
     weak var delegate: TableViewCellDelegate?
-
+    
+    var titleOrMemo: TitleOrMemo = .none {
+        didSet {
+            updateCellCornerRadius()
+        }
+    }
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
@@ -42,6 +49,16 @@ final class TopTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func updateCellCornerRadius() {
+        layer.cornerRadius = 8.0
+        layer.masksToBounds = true
+        if titleOrMemo == .title {
+            layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        } else if titleOrMemo == .memo {
+            layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        }
     }
 }
 
@@ -77,6 +94,9 @@ extension TopTableViewCell: UITextViewDelegate {
     
     func textViewDidChange(_ textView: UITextView) {
         if let delegate = delegate {
+            guard let text = textView.text else { return }
+            let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            delegate.transferText(text: trimmedText, titleOrMemo: self.titleOrMemo)
             delegate.updateTextViewHeight(self, textView)
         }
     }

@@ -149,7 +149,12 @@ extension MainViewController: UICollectionViewConfigurationProtocol {
 }
 
 extension MainViewController: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        if indexPath.row == 2 {
+            let entireTodoListVC = EntireTodoListViewController()
+            navigationController?.pushViewController(entireTodoListVC, animated: true)
+        }
+    }
 }
 
 extension MainViewController: UICollectionViewDataSource {
@@ -163,6 +168,7 @@ extension MainViewController: UICollectionViewDataSource {
         cell.listImageContainerView.backgroundColor = listBackgroundColor[indexPath.item]
         cell.listImageView.image = UIImage(systemName: listImageNameList[indexPath.item])
         cell.titleLabel.text = listTitleList[indexPath.item]
+        
         
         return cell
     }

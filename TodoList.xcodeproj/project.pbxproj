@@ -12,6 +12,11 @@
 		005C9FA82B7DC4B100E4A2FC /* PriorityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */; };
 		005C9FAE2B7E00E000E4A2FC /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 005C9FAD2B7E00E000E4A2FC /* Realm */; };
 		005C9FB02B7E00E000E4A2FC /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 005C9FAF2B7E00E000E4A2FC /* RealmSwift */; };
+		005C9FB42B7E093800E4A2FC /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FB32B7E093800E4A2FC /* RealmManager.swift */; };
+		005C9FB72B7E09AC00E4A2FC /* TodoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FB62B7E09AC00E4A2FC /* TodoModel.swift */; };
+		005C9FB92B7E188100E4A2FC /* TitleOrMemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FB82B7E188100E4A2FC /* TitleOrMemo.swift */; };
+		005C9FBF2B7E1ED300E4A2FC /* EntireTodoListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FBE2B7E1ED300E4A2FC /* EntireTodoListViewController.swift */; };
+		005C9FC12B7E247200E4A2FC /* StoredTodoListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FC02B7E247200E4A2FC /* StoredTodoListTableViewCell.swift */; };
 		00B209942B7CF01500503A16 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B209932B7CF01500503A16 /* AppDelegate.swift */; };
 		00B209962B7CF01500503A16 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B209952B7CF01500503A16 /* SceneDelegate.swift */; };
 		00B2099B2B7CF01500503A16 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00B209992B7CF01500503A16 /* Main.storyboard */; };
@@ -36,6 +41,11 @@
 		005C9F922B7DA72000E4A2FC /* DateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
 		005C9FA52B7DC4A500E4A2FC /* TagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViewController.swift; sourceTree = "<group>"; };
 		005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityViewController.swift; sourceTree = "<group>"; };
+		005C9FB32B7E093800E4A2FC /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
+		005C9FB62B7E09AC00E4A2FC /* TodoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoModel.swift; sourceTree = "<group>"; };
+		005C9FB82B7E188100E4A2FC /* TitleOrMemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleOrMemo.swift; sourceTree = "<group>"; };
+		005C9FBE2B7E1ED300E4A2FC /* EntireTodoListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntireTodoListViewController.swift; sourceTree = "<group>"; };
+		005C9FC02B7E247200E4A2FC /* StoredTodoListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoredTodoListTableViewCell.swift; sourceTree = "<group>"; };
 		00B209902B7CF01500503A16 /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00B209932B7CF01500503A16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00B209952B7CF01500503A16 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -95,6 +105,48 @@
 			path = Priority;
 			sourceTree = "<group>";
 		};
+		005C9FB12B7E091E00E4A2FC /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				005C9FB32B7E093800E4A2FC /* RealmManager.swift */,
+			);
+			path = Managers;
+			sourceTree = "<group>";
+		};
+		005C9FB52B7E099C00E4A2FC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				005C9FB62B7E09AC00E4A2FC /* TodoModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		005C9FBB2B7E1E3300E4A2FC /* TopTableViewCell */ = {
+			isa = PBXGroup;
+			children = (
+				00B209C12B7D19AA00503A16 /* TopTableViewCell.swift */,
+				005C9FBC2B7E1E4400E4A2FC /* Enum */,
+			);
+			path = TopTableViewCell;
+			sourceTree = "<group>";
+		};
+		005C9FBC2B7E1E4400E4A2FC /* Enum */ = {
+			isa = PBXGroup;
+			children = (
+				005C9FB82B7E188100E4A2FC /* TitleOrMemo.swift */,
+			);
+			path = Enum;
+			sourceTree = "<group>";
+		};
+		005C9FBD2B7E1EB000E4A2FC /* EntireTodoList */ = {
+			isa = PBXGroup;
+			children = (
+				005C9FBE2B7E1ED300E4A2FC /* EntireTodoListViewController.swift */,
+				005C9FC02B7E247200E4A2FC /* StoredTodoListTableViewCell.swift */,
+			);
+			path = EntireTodoList;
+			sourceTree = "<group>";
+		};
 		00B209872B7CF01500503A16 = {
 			isa = PBXGroup;
 			children = (
@@ -116,6 +168,8 @@
 			children = (
 				00B209932B7CF01500503A16 /* AppDelegate.swift */,
 				00B209952B7CF01500503A16 /* SceneDelegate.swift */,
+				005C9FB52B7E099C00E4A2FC /* Models */,
+				005C9FB12B7E091E00E4A2FC /* Managers */,
 				00B209B62B7CF9B800503A16 /* Extensions */,
 				00B209AA2B7CF11C00503A16 /* Protocols */,
 				00B209A92B7CF0E100503A16 /* Scene */,
@@ -162,6 +216,7 @@
 			children = (
 				00B209A72B7CF0DC00503A16 /* MainViewController.swift */,
 				00B209B22B7CF94700503A16 /* TodoCollectionViewCell.swift */,
+				005C9FBD2B7E1EB000E4A2FC /* EntireTodoList */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -170,7 +225,7 @@
 			isa = PBXGroup;
 			children = (
 				00B209BB2B7D12EE00503A16 /* AddTodoViewController.swift */,
-				00B209C12B7D19AA00503A16 /* TopTableViewCell.swift */,
+				005C9FBB2B7E1E3300E4A2FC /* TopTableViewCell */,
 				00B209C92B7D31A100503A16 /* BottomTableViewCell.swift */,
 				005C9F912B7DA70300E4A2FC /* Date */,
 				005C9FA22B7DC44900E4A2FC /* Tag */,
@@ -264,16 +319,21 @@
 				00B209B52B7CF95D00503A16 /* IdentifierProtocol.swift in Sources */,
 				00B209CA2B7D31A100503A16 /* BottomTableViewCell.swift in Sources */,
 				00B209A82B7CF0DC00503A16 /* MainViewController.swift in Sources */,
+				005C9FB42B7E093800E4A2FC /* RealmManager.swift in Sources */,
 				00B209C62B7D1A7400503A16 /* UITableViewCell+Extension.swift in Sources */,
 				00B209BC2B7D12EE00503A16 /* AddTodoViewController.swift in Sources */,
+				005C9FB72B7E09AC00E4A2FC /* TodoModel.swift in Sources */,
+				005C9FBF2B7E1ED300E4A2FC /* EntireTodoListViewController.swift in Sources */,
 				00B209AC2B7CF13300503A16 /* UIViewControllerConfigurationProtocol.swift in Sources */,
 				00B209C22B7D19AA00503A16 /* TopTableViewCell.swift in Sources */,
 				00B209942B7CF01500503A16 /* AppDelegate.swift in Sources */,
 				00B209B82B7CF9CF00503A16 /* UICollectionViewCell+Extension.swift in Sources */,
 				005C9F932B7DA72000E4A2FC /* DateViewController.swift in Sources */,
 				00B209C42B7D1A0F00503A16 /* UITableViewCellConfigurationProtocol.swift in Sources */,
+				005C9FC12B7E247200E4A2FC /* StoredTodoListTableViewCell.swift in Sources */,
 				00B209B12B7CF70B00503A16 /* UICollectionViewConfigurationProtocol.swift in Sources */,
 				005C9FA62B7DC4A500E4A2FC /* TagViewController.swift in Sources */,
+				005C9FB92B7E188100E4A2FC /* TitleOrMemo.swift in Sources */,
 				00B209B32B7CF94700503A16 /* TodoCollectionViewCell.swift in Sources */,
 				00B209962B7CF01500503A16 /* SceneDelegate.swift in Sources */,
 			);

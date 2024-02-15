@@ -22,7 +22,7 @@ final class DateViewController: UIViewController {
     
     var navigationItemTitle: String = ""
     
-    var transferDate: ((String) -> Void)?
+    var transferDate: ((Date) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,11 +36,8 @@ final class DateViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy. M. dd."
-        
         guard let transferDate = transferDate else { return }
-        transferDate(dateFormatter.string(from: datePicker.date))
+        transferDate(datePicker.date)
     }
 }
 

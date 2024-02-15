@@ -32,7 +32,9 @@ final class AddTodoViewController: UIViewController {
     private let placeholderList: [String] = ["제목", "메모"]
     private let titleList: [String] = ["마감일", "태그", "우선 순위", "이미지 추가"]
     
-    var selectedDateString: String = ""
+    var todoTitle: String = ""
+    var memo: String?
+    var selectedDate: Date = Date()
     var newTag: String = ""
     var newPrioirty: String = ""
     
@@ -55,13 +57,27 @@ extension AddTodoViewController {
     
     @objc func rightBarButtonItemTapped() {
         print(#function)
+        
+        if !todoTitle.isEmpty && !newTag.isEmpty && !newPrioirty.isEmpty {
+            print(todoTitle)
+            print(memo)
+            print(selectedDate)
+            print(newTag)
+            print(newPrioirty)
+
+            RealmManager.shared.addTodo(title: todoTitle, memo: memo, tag: newTag, priority: newPrioirty, dueDate: selectedDate)
+            dismiss(animated: true)
+        } else {
+            print("비어 있는 항목이 있습니다!")
+        }
     }
     
     @objc func addNewTag(_ notification: NSNotification) {
         if let newTag = notification.userInfo?["tag"] as? String {
             print(newTag)
             self.newTag = newTag
-            topTableView.reloadRows(at: [IndexPath(row: 1 + placeholderList.count, section: 0)], with: .automatic)
+            let weight = placeholderList.count + 1
+            topTableView.reloadRows(at: [IndexPath(row: 1 + weight, section: 0)], with: .automatic)
         }
     }
 }
@@ -116,7 +132,7 @@ extension AddTodoViewController: UITableViewDelegate {
             let dateVC = DateViewController()
             dateVC.navigationItemTitle = titleList[indexPath.row - weight]
             dateVC.transferDate = { selectedDate in
-                self.selectedDateString = selectedDate
+                self.selectedDate = selectedDate
                 tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             navigationController?.pushViewController(dateVC, animated: true)
@@ -145,13 +161,9 @@ extension AddTodoViewController: UITableViewDataSource {
             cell.placeholder = placeholderList[indexPath.row]
             
             if indexPath.row == 0 {
-                cell.layer.cornerRadius = 8.0
-                cell.layer.masksToBounds = true
-                cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+                cell.titleOrMemo = .title
             } else if indexPath.row == 1 {
-                cell.layer.cornerRadius = 8.0
-                cell.layer.masksToBounds = true
-                cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+                cell.titleOrMemo = .memo
             }
             
             return cell
@@ -166,7 +178,11 @@ extension AddTodoViewController: UITableViewDataSource {
             
             cell.titleLabel.text = titleList[indexPath.row - weight]
             if indexPath.row == 0 + weight {
-                cell.subTitleLabel.text = selectedDateString
+                
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "yyyy. M. dd"
+                
+                cell.subTitleLabel.text = dateFormatter.string(from: self.selectedDate)
             } else if indexPath.row == 1 + weight {
                 cell.subTitleLabel.text = newTag
             } else if indexPath.row == 2 + weight {
@@ -179,6 +195,16 @@ extension AddTodoViewController: UITableViewDataSource {
 }
 
 extension AddTodoViewController: TableViewCellDelegate {
+    func transferText(text: String, titleOrMemo: TitleOrMemo) {
+        switch titleOrMemo {
+        case .title:
+            self.todoTitle = text
+        case .memo:
+            self.memo = text
+        case .none: break;
+        }
+    }
+    
     func updateTextViewHeight(_ cell: TopTableViewCell, _ textView: UITextView) {
         let size = textView.bounds.size
         let newSize = topTableView.sizeThatFits(
@@ -187,7 +213,7 @@ extension AddTodoViewController: TableViewCellDelegate {
                 height: CGFloat.greatestFiniteMagnitude
             )
         )
-        print(newSize)
+        
         if size.height != newSize.height {
             UIView.setAnimationsEnabled(false)
             topTableView.beginUpdates()

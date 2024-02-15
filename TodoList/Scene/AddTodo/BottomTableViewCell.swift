@@ -20,7 +20,7 @@ final class BottomTableViewCell: UITableViewCell {
     
     let subTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = "마감일"
+        label.text = ""
         label.textColor = .white
         label.font = .systemFont(ofSize: 14.0)
         return label
@@ -44,7 +44,6 @@ final class BottomTableViewCell: UITableViewCell {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
 }
 
 extension BottomTableViewCell: UITableViewCellConfigurationProtocol {

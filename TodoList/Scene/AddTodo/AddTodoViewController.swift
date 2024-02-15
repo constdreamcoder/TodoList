@@ -8,9 +8,13 @@
 import UIKit
 import SnapKit
 
+protocol PriorityTransferDelegate: AnyObject {
+    func transferNewPriority(priority: String)
+}
+
 final class AddTodoViewController: UIViewController {
     
-    lazy var addTableView: UITableView = {
+    lazy var topTableView: UITableView = {
         let tableView = UITableView()
         
         tableView.delegate = self
@@ -27,12 +31,18 @@ final class AddTodoViewController: UIViewController {
     private let placeholderList: [String] = ["제목", "메모"]
     private let titleList: [String] = ["마감일", "태그", "우선 순위", "이미지 추가"]
     
+    var selectedDateString: String = ""
+    var newTag: String = ""
+    var newPrioirty: String = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         configureNavigationBar()
         configureConstraints()
         configureUI()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(addNewTag), name: NSNotification.Name("SendNewTag"), object: nil)
     }
 }
 
@@ -44,6 +54,14 @@ extension AddTodoViewController {
     
     @objc func rightBarButtonItemTapped() {
         print(#function)
+    }
+    
+    @objc func addNewTag(_ notification: NSNotification) {
+        if let newTag = notification.userInfo?["tag"] as? String {
+            print(newTag)
+            self.newTag = newTag
+            topTableView.reloadRows(at: [IndexPath(row: 1 + placeholderList.count, section: 0)], with: .automatic)
+        }
     }
 }
 
@@ -60,10 +78,10 @@ extension AddTodoViewController: UIViewControllerConfigurationProtocol {
     
     func configureConstraints() {
         [
-            addTableView
+            topTableView
         ].forEach { view.addSubview($0) }
         
-        addTableView.snp.makeConstraints {
+        topTableView.snp.makeConstraints {
             $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16.0)
             $0.bottom.equalTo(view.safeAreaLayoutGuide)
         }
@@ -86,6 +104,29 @@ extension AddTodoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let weightIndex = placeholderList.count
+        
+        if indexPath.row == (0 + weightIndex) {
+            let dateVC = DateViewController()
+            dateVC.navigationItemTitle = titleList[indexPath.row - weightIndex]
+            dateVC.transferDate = { selectedDate in
+                self.selectedDateString = selectedDate
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            navigationController?.pushViewController(dateVC, animated: true)
+        } else if indexPath.row == (1 + weightIndex) {
+            let tagVC = TagViewController()
+            tagVC.navigationItemTitle = titleList[indexPath.row - weightIndex]
+            navigationController?.pushViewController(tagVC, animated: true)
+        } else if indexPath.row == (2 + weightIndex) {
+            let priorityVC = PriorityViewController()
+            priorityVC.navigationItemTitle = titleList[indexPath.row - weightIndex]
+            priorityVC.delegate = self
+            navigationController?.pushViewController(priorityVC, animated: true)
+        }
+    }
 }
 
 extension AddTodoViewController: UITableViewDataSource {
@@ -98,11 +139,32 @@ extension AddTodoViewController: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: TopTableViewCell.identifier, for: indexPath) as? TopTableViewCell else { return UITableViewCell() }
             cell.delegate = self
             cell.placeholder = placeholderList[indexPath.row]
+            
+            if indexPath.row == 0 {
+                cell.layer.cornerRadius = 8.0
+                cell.layer.masksToBounds = true
+                cell.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            } else if indexPath.row == 1 {
+                cell.layer.cornerRadius = 8.0
+                cell.layer.masksToBounds = true
+                cell.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            }
+            
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: BottomTableViewCell.identifier, for: indexPath) as? BottomTableViewCell else { return UITableViewCell() }
             
-            cell.titleLabel.text = titleList[indexPath.row - placeholderList.count]
+            let weight = placeholderList.count
+            
+            cell.titleLabel.text = titleList[indexPath.row - weight]
+            if indexPath.row == 0 + weight {
+                cell.subTitleLabel.text = selectedDateString
+            } else if indexPath.row == 1 + weight {
+                cell.subTitleLabel.text = newTag
+            } else if indexPath.row == 2 + weight {
+                cell.subTitleLabel.text = newPrioirty
+            }
+            
             return cell
         }
     }
@@ -111,7 +173,7 @@ extension AddTodoViewController: UITableViewDataSource {
 extension AddTodoViewController: TableViewCellDelegate {
     func updateTextViewHeight(_ cell: TopTableViewCell, _ textView: UITextView) {
         let size = textView.bounds.size
-        let newSize = addTableView.sizeThatFits(
+        let newSize = topTableView.sizeThatFits(
             CGSize(
                 width: size.width,
                 height: CGFloat.greatestFiniteMagnitude
@@ -120,9 +182,16 @@ extension AddTodoViewController: TableViewCellDelegate {
         print(newSize)
         if size.height != newSize.height {
             UIView.setAnimationsEnabled(false)
-            addTableView.beginUpdates()
-            addTableView.endUpdates()
+            topTableView.beginUpdates()
+            topTableView.endUpdates()
             UIView.setAnimationsEnabled(true)
         }
+    }
+}
+
+extension AddTodoViewController: PriorityTransferDelegate {
+    func transferNewPriority(priority: String) {
+        self.newPrioirty = priority
+        topTableView.reloadRows(at: [IndexPath(row: placeholderList.count + 2, section: 0)], with: .automatic)
     }
 }

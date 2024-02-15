@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		005C9F932B7DA72000E4A2FC /* DateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9F922B7DA72000E4A2FC /* DateViewController.swift */; };
+		005C9FA62B7DC4A500E4A2FC /* TagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FA52B7DC4A500E4A2FC /* TagViewController.swift */; };
+		005C9FA82B7DC4B100E4A2FC /* PriorityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */; };
 		00B209942B7CF01500503A16 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B209932B7CF01500503A16 /* AppDelegate.swift */; };
 		00B209962B7CF01500503A16 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 00B209952B7CF01500503A16 /* SceneDelegate.swift */; };
 		00B2099B2B7CF01500503A16 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 00B209992B7CF01500503A16 /* Main.storyboard */; };
@@ -28,6 +31,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		005C9F922B7DA72000E4A2FC /* DateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
+		005C9FA52B7DC4A500E4A2FC /* TagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViewController.swift; sourceTree = "<group>"; };
+		005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityViewController.swift; sourceTree = "<group>"; };
 		00B209902B7CF01500503A16 /* TodoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TodoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00B209932B7CF01500503A16 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		00B209952B7CF01500503A16 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -61,6 +67,30 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		005C9F912B7DA70300E4A2FC /* Date */ = {
+			isa = PBXGroup;
+			children = (
+				005C9F922B7DA72000E4A2FC /* DateViewController.swift */,
+			);
+			path = Date;
+			sourceTree = "<group>";
+		};
+		005C9FA22B7DC44900E4A2FC /* Tag */ = {
+			isa = PBXGroup;
+			children = (
+				005C9FA52B7DC4A500E4A2FC /* TagViewController.swift */,
+			);
+			path = Tag;
+			sourceTree = "<group>";
+		};
+		005C9FA42B7DC45E00E4A2FC /* Priority */ = {
+			isa = PBXGroup;
+			children = (
+				005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */,
+			);
+			path = Priority;
+			sourceTree = "<group>";
+		};
 		00B209872B7CF01500503A16 = {
 			isa = PBXGroup;
 			children = (
@@ -97,7 +127,7 @@
 			isa = PBXGroup;
 			children = (
 				00B209BD2B7D164A00503A16 /* Main */,
-				00B209BE2B7D165000503A16 /* New Group */,
+				00B209BE2B7D165000503A16 /* AddTodo */,
 			);
 			path = Scene;
 			sourceTree = "<group>";
@@ -132,14 +162,17 @@
 			path = Main;
 			sourceTree = "<group>";
 		};
-		00B209BE2B7D165000503A16 /* New Group */ = {
+		00B209BE2B7D165000503A16 /* AddTodo */ = {
 			isa = PBXGroup;
 			children = (
 				00B209BB2B7D12EE00503A16 /* AddTodoViewController.swift */,
 				00B209C12B7D19AA00503A16 /* TopTableViewCell.swift */,
 				00B209C92B7D31A100503A16 /* BottomTableViewCell.swift */,
+				005C9F912B7DA70300E4A2FC /* Date */,
+				005C9FA22B7DC44900E4A2FC /* Tag */,
+				005C9FA42B7DC45E00E4A2FC /* Priority */,
 			);
-			path = "New Group";
+			path = AddTodo;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,6 +252,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				005C9FA82B7DC4B100E4A2FC /* PriorityViewController.swift in Sources */,
 				00B209BA2B7CFAC400503A16 /* UICollectionViewCellConfigurationProtocol.swift in Sources */,
 				00B209B52B7CF95D00503A16 /* IdentifierProtocol.swift in Sources */,
 				00B209CA2B7D31A100503A16 /* BottomTableViewCell.swift in Sources */,
@@ -229,8 +263,10 @@
 				00B209C22B7D19AA00503A16 /* TopTableViewCell.swift in Sources */,
 				00B209942B7CF01500503A16 /* AppDelegate.swift in Sources */,
 				00B209B82B7CF9CF00503A16 /* UICollectionViewCell+Extension.swift in Sources */,
+				005C9F932B7DA72000E4A2FC /* DateViewController.swift in Sources */,
 				00B209C42B7D1A0F00503A16 /* UITableViewCellConfigurationProtocol.swift in Sources */,
 				00B209B12B7CF70B00503A16 /* UICollectionViewConfigurationProtocol.swift in Sources */,
+				005C9FA62B7DC4A500E4A2FC /* TagViewController.swift in Sources */,
 				00B209B32B7CF94700503A16 /* TodoCollectionViewCell.swift in Sources */,
 				00B209962B7CF01500503A16 /* SceneDelegate.swift in Sources */,
 			);

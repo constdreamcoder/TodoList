@@ -14,7 +14,6 @@ protocol TableViewCellDelegate: AnyObject {
 }
 
 final class TopTableViewCell: UITableViewCell {
-    
     lazy var textView: UITextView = {
         let textView = UITextView()
         textView.font = .systemFont(ofSize: 14.0)
@@ -26,17 +25,18 @@ final class TopTableViewCell: UITableViewCell {
         return textView
     }()
     
+    weak var delegate: TableViewCellDelegate?
+    
     var placeholder: String = "" {
         willSet {
             textView.text = newValue
         }
     }
     
-    weak var delegate: TableViewCellDelegate?
-    
     var titleOrMemo: TitleOrMemo = .none {
         didSet {
             updateCellCornerRadius()
+            addMemoHeightConstraints()
         }
     }
     
@@ -60,6 +60,14 @@ final class TopTableViewCell: UITableViewCell {
             layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
         }
     }
+    
+    private func addMemoHeightConstraints() {
+        if titleOrMemo == .memo {
+            textView.snp.makeConstraints {
+                $0.height.greaterThanOrEqualTo(100.0)
+            }
+        }
+    }
 }
 
 extension TopTableViewCell: UITableViewCellConfigurationProtocol {
@@ -73,11 +81,11 @@ extension TopTableViewCell: UITableViewCellConfigurationProtocol {
     
     func configureTableViewCellUI() {
         backgroundColor = .darkGray
+        selectionStyle = .none
     }
 }
 
 extension TopTableViewCell: UITextViewDelegate {
-    
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .lightGray {
             textView.text = nil

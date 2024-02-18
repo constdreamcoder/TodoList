@@ -12,10 +12,9 @@ final class PriorityViewController: UIViewController {
     
     let segmentControl: UISegmentedControl = {
         let segmentControl = UISegmentedControl()
-        segmentControl.insertSegment(withTitle: "낮음", at: 0, animated: true)
-        segmentControl.insertSegment(withTitle: "중간", at: 1, animated: true)
-        segmentControl.insertSegment(withTitle: "높음", at: 2, animated: true)
-
+        for (index, priority) in Priority.allCases.enumerated() {
+            segmentControl.insertSegment(withTitle: priority.rawValue, at: index, animated: true)
+        }
         segmentControl.backgroundColor = .white
         return segmentControl
     }()

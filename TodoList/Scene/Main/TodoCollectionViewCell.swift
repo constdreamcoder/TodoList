@@ -25,6 +25,7 @@ final class TodoCollectionViewCell: UICollectionViewCell {
         imageView.tintColor = .white
         imageView.backgroundColor = .clear
         imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
         return imageView
     }()
     
@@ -49,11 +50,6 @@ final class TodoCollectionViewCell: UICollectionViewCell {
         
         configureCollectionViewCellConstraints()
         configureCollectionViewCellUI()
-        
-        DispatchQueue.main.async {
-            
-            self.listImageView.clipsToBounds = true
-        }
     }
     
     required init?(coder: NSCoder) {

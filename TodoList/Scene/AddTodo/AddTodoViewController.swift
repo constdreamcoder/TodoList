@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Toast
 
 protocol PriorityTransferDelegate: AnyObject {
     func transferNewPriority(priority: String)
@@ -34,9 +35,11 @@ final class AddTodoViewController: UIViewController {
     
     var todoTitle: String = ""
     var memo: String?
-    var selectedDate: Date = Date()
+    var selectedDate: Date?
     var newTag: String = ""
-    var newPrioirty: String = ""
+    var newPrioirty: String?
+    
+    var transferNewlyAddedTodo: ((TodoModel) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,6 +49,28 @@ final class AddTodoViewController: UIViewController {
         configureUI()
         
         NotificationCenter.default.addObserver(self, selector: #selector(addNewTag), name: NSNotification.Name("SendNewTag"), object: nil)
+    }
+    
+    private func checkError() throws -> Bool {
+        guard !todoTitle.isEmpty else {
+            throw AddTodoError.emptyTitle
+        }
+        
+        guard !newTag.isEmpty else {
+            throw AddTodoError.emptyTag
+        }
+    
+        return true
+    }
+    
+    private func showErrorMessage(_ error: Error) {
+        switch error {
+        case AddTodoError.emptyTitle:
+            view.makeToast(AddTodoError.emptyTitle.errorMessage)
+        case AddTodoError.emptyTag:
+            view.makeToast(AddTodoError.emptyTag.errorMessage)
+        default: break
+        }
     }
 }
 
@@ -57,18 +82,16 @@ extension AddTodoViewController {
     
     @objc func rightBarButtonItemTapped() {
         print(#function)
-        
-        if !todoTitle.isEmpty && !newTag.isEmpty && !newPrioirty.isEmpty {
-            print(todoTitle)
-            print(memo)
-            print(selectedDate)
-            print(newTag)
-            print(newPrioirty)
-
-            RealmManager.shared.addTodo(title: todoTitle, memo: memo, tag: newTag, priority: newPrioirty, dueDate: selectedDate)
-            dismiss(animated: true)
-        } else {
-            print("비어 있는 항목이 있습니다!")
+    
+        do {
+            if try checkError() {
+                guard let transferNewlyAddedTodo = transferNewlyAddedTodo else { return }
+                let newTodo = RealmManager.shared.addTodo(title: todoTitle, memo: memo, tag: newTag, priority: newPrioirty, dueDate: selectedDate)
+                transferNewlyAddedTodo(newTodo!)
+                dismiss(animated: true)
+            }
+        } catch {
+            showErrorMessage(error)
         }
     }
     
@@ -159,7 +182,6 @@ extension AddTodoViewController: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: TopTableViewCell.identifier, for: indexPath) as? TopTableViewCell else { return UITableViewCell() }
             cell.delegate = self
             cell.placeholder = placeholderList[indexPath.row]
-            
             if indexPath.row == 0 {
                 cell.titleOrMemo = .title
             } else if indexPath.row == 1 {
@@ -169,7 +191,9 @@ extension AddTodoViewController: UITableViewDataSource {
             return cell
         } else if indexPath.row == 2 {
             let cell = UITableViewCell()
+            cell.selectionStyle = .none
             cell.backgroundColor = .clear
+            
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: BottomTableViewCell.identifier, for: indexPath) as? BottomTableViewCell else { return UITableViewCell() }
@@ -178,17 +202,13 @@ extension AddTodoViewController: UITableViewDataSource {
             
             cell.titleLabel.text = titleList[indexPath.row - weight]
             if indexPath.row == 0 + weight {
-                
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "yyyy. M. dd"
-                
-                cell.subTitleLabel.text = dateFormatter.string(from: self.selectedDate)
+                cell.subTitleLabel.text = selectedDate?.getConvertedselectedDate
             } else if indexPath.row == 1 + weight {
                 cell.subTitleLabel.text = newTag
             } else if indexPath.row == 2 + weight {
                 cell.subTitleLabel.text = newPrioirty
             }
-            
+
             return cell
         }
     }

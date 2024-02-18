@@ -20,7 +20,6 @@ final class EntireTodoListViewController: UIViewController {
         tableView.register(StoredTodoListTableViewCell.self, forCellReuseIdentifier: StoredTodoListTableViewCell.identifier)
         
         tableView.backgroundColor = .clear
-        tableView.rowHeight = UITableView.automaticDimension
         
         return tableView
     }()
@@ -29,12 +28,12 @@ final class EntireTodoListViewController: UIViewController {
         return [
             UIAction(title: "마감일 순으로 보기", handler: { (_) in
                 print("마감일 순으로 보기")
-                self.sortedORFilteredTodoList = RealmManager.shared.readTodoList().sorted(byKeyPath: "dueDate", ascending: true).map { $0 }
+                self.sortedOrFilteredTodoList = RealmManager.shared.sortingybyDueDateInAscendingOrder.map { $0 }
                 self.storedTodoListTableView.reloadData()
             }),
             UIAction(title: "제목 순으로 보기", handler: { (_) in
                 print("제목 순으로 보기")
-                self.sortedORFilteredTodoList = RealmManager.shared.readTodoList().sorted(byKeyPath: "title", ascending: true).map { $0 }
+                self.sortedOrFilteredTodoList = RealmManager.shared.sortingybyTitleInAscendingOrder.map { $0 }
                 self.storedTodoListTableView.reloadData()
             }),
         ]
@@ -48,9 +47,8 @@ final class EntireTodoListViewController: UIViewController {
         return [
             UIAction(title: "우선 순위 낮음만 보기", handler: { (_) in
                 print("우선 순위 낮음만 보기")
-                self.sortedORFilteredTodoList = RealmManager.shared.readTodoList().where { $0.priority == "낮음" }.map { $0 }
+                self.sortedOrFilteredTodoList = RealmManager.shared.filteringByLowPriority.map { $0 }
                 self.storedTodoListTableView.reloadData()
-                print(self.storedTodoList)
             }),
         ]
     }
@@ -61,7 +59,7 @@ final class EntireTodoListViewController: UIViewController {
     
     let storedTodoList: [TodoModel] = RealmManager.shared.readTodoList().map{ $0 }
     
-    var sortedORFilteredTodoList: [TodoModel] = []
+    var sortedOrFilteredTodoList: [TodoModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -72,10 +70,26 @@ final class EntireTodoListViewController: UIViewController {
         configureOtherSettings()
     }
     
+    private func updateCompleteButtonImage(_ completeButton: UIButton, completed: Bool) {
+        if completed {
+            completeButton.setImage(UIImage(systemName: "circle.inset.filled"), for: .normal)
+        } else {
+            completeButton.setImage(UIImage(systemName: "circle"), for: .normal)
+        }
+    }
 }
 
 extension EntireTodoListViewController {
-    
+    @objc func completeButtonTapped(_ button: UIButton) {
+        let todo = sortedOrFilteredTodoList[button.tag]
+        
+        if let error = RealmManager.shared.updateCompleted(todo) {
+            print(error)
+        } else {
+            updateCompleteButtonImage(button, completed: todo.completed)
+            storedTodoListTableView.reloadRows(at: [IndexPath(row: button.tag, section: 0)], with: .none)
+        }
+    }
 }
 
 extension EntireTodoListViewController: UIViewControllerConfigurationProtocol {
@@ -110,7 +124,7 @@ extension EntireTodoListViewController: UIViewControllerConfigurationProtocol {
     }
     
     func configureOtherSettings() {
-        sortedORFilteredTodoList = storedTodoList
+        sortedOrFilteredTodoList = storedTodoList
     }
     
     func configureUserEvents() {
@@ -119,20 +133,51 @@ extension EntireTodoListViewController: UIViewControllerConfigurationProtocol {
 }
 
 extension EntireTodoListViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return UITableView.automaticDimension
+    }
     
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let delete = UIContextualAction(style: .destructive, title: "삭제") { action, view, completionHandler in
+            let todo = self.sortedOrFilteredTodoList[indexPath.row]
+            
+            if let error = RealmManager.shared.delete(todo) {
+                print(error)
+            } else {
+                self.sortedOrFilteredTodoList.remove(at: indexPath.row)
+                tableView.reloadData()
+                completionHandler(true)
+            }
+        }
+                
+        let config = UISwipeActionsConfiguration(actions: [delete])
+        config.performsFirstActionWithFullSwipe = false
+        return config
+    }
 }
 
 extension EntireTodoListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return sortedORFilteredTodoList.count
+        return sortedOrFilteredTodoList.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: StoredTodoListTableViewCell.identifier, for: indexPath) as? StoredTodoListTableViewCell else { return UITableViewCell() }
         
-        let todo = sortedORFilteredTodoList[indexPath.row]
+        let todo = sortedOrFilteredTodoList[indexPath.row]
+        
+        cell.resetConstraints(todo)
+        
+        cell.priorityLabel.text = Priority.getExclamationMarksDependingOnPriority(todo.priority)
         cell.titleLabel.text = todo.title
+        cell.memoLabel.text = todo.memo
+        cell.dueDateLabel.text = todo.dueDate?.getConvertedselectedDate
         cell.tagLabel.text = "#\(todo.tag)"
+        
+        cell.completeButton.tag = indexPath.row
+        updateCompleteButtonImage(cell.completeButton, completed: todo.completed)
+        cell.completeButton.addTarget(self, action: #selector(completeButtonTapped), for: .touchUpInside)
         return cell
     }
 }

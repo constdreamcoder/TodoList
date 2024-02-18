@@ -101,5 +101,6 @@ extension BottomTableViewCell: UITableViewCellConfigurationProtocol {
     func configureTableViewCellUI() {
         backgroundColor = .clear
         contentView.backgroundColor = .clear
+        selectionStyle = .none
     }
 }

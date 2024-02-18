@@ -34,18 +34,28 @@ final class MainViewController: UIViewController {
         return button
     }()
     
-    let listImageNameList: [String] = ["14.square", "calendar", "tray.fill", "flag.fill", "checkmark"]
-    let listTitleList: [String] = ["오늘", "예정", "전체", "깃발 표시", "완료됨"]
-    let listBackgroundColor: [UIColor] = [.systemBlue, .systemPink, .lightGray, .systemYellow, .gray]
+    private let titles: [MainCollectionViewTitleEnum] = MainCollectionViewTitleEnum.allCases
+    
+    private var todoList: [TodoModel] = []
+    private var completedTodoList: [TodoModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print(#function)
+
         configureNavigationBar()
         configureConstraints()
         configureUI()
         configureOtherSettings()
         configureUserEvents()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        todoList = RealmManager.shared.readTodoList().map { $0 }
+        completedTodoList = RealmManager.shared.filteringByCompleted.map { $0 }
+        todoCollectionView.reloadData()
     }
 }
 
@@ -58,6 +68,10 @@ extension MainViewController {
         print(#function)
         
         let addNewTodoVC = AddTodoViewController()
+        addNewTodoVC.transferNewlyAddedTodo = { newTodo in
+            self.todoList.append(newTodo)
+            self.todoCollectionView.reloadItems(at: [IndexPath(item: 2, section: 0)])
+        }
         let navVC = UINavigationController(rootViewController: addNewTodoVC)
         present(navVC, animated: true, completion: nil)
     }
@@ -122,7 +136,6 @@ extension MainViewController: UIViewControllerConfigurationProtocol {
         createTodoButton.addTarget(self, action: #selector(createTodoButtonTapped), for: .touchUpInside)
         createListButton.addTarget(self, action: #selector(createListButtonTapped), for: .touchUpInside)
     }
-
 }
 
 extension MainViewController: UICollectionViewConfigurationProtocol {
@@ -159,16 +172,24 @@ extension MainViewController: UICollectionViewDelegate {
 
 extension MainViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return listImageNameList.count
+        return titles.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TodoCollectionViewCell.identifier, for: indexPath) as? TodoCollectionViewCell else { return UICollectionViewCell() }
         
-        cell.listImageContainerView.backgroundColor = listBackgroundColor[indexPath.item]
-        cell.listImageView.image = UIImage(systemName: listImageNameList[indexPath.item])
-        cell.titleLabel.text = listTitleList[indexPath.item]
+        let title = titles[indexPath.item]
         
+        cell.listImageContainerView.backgroundColor = title.listBackgroundColor
+        cell.listImageView.image = UIImage(systemName: title.listImageName)
+        cell.titleLabel.text = title.rawValue
+        if title.rawValue == "전체" {
+            cell.numberLabel.text = "\(todoList.count)"
+        } else if title.rawValue == "완료됨" {
+            cell.numberLabel.text = "\(completedTodoList.count)"
+        } else {
+            cell.numberLabel.text = "0"
+        }
         
         return cell
     }

@@ -8,6 +8,10 @@
 import UIKit
 import SnapKit
 
+protocol PriorityDelegate: AnyObject {
+    func transferNewPriority(priority: String)
+}
+
 final class PriorityViewController: UIViewController {
     
     let segmentControl: UISegmentedControl = {
@@ -21,7 +25,7 @@ final class PriorityViewController: UIViewController {
 
     var navigationItemTitle: String = ""
     
-    var delegate: PriorityTransferDelegate?
+    var delegate: PriorityDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()

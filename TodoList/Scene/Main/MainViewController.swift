@@ -38,6 +38,8 @@ final class MainViewController: UIViewController {
     
     private var todoList: [TodoModel] = []
     private var completedTodoList: [TodoModel] = []
+    private var todayTodoList: [TodoModel] = []
+    private var scheduledTodoList: [TodoModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +57,9 @@ final class MainViewController: UIViewController {
         
         todoList = RealmManager.shared.readTodoList().map { $0 }
         completedTodoList = RealmManager.shared.filteringByCompleted.map { $0 }
+        todayTodoList = RealmManager.shared.filteringByToday.map { $0 }
+        scheduledTodoList = RealmManager.shared.filteringByScheduled.map { $0 }
+        
         todoCollectionView.reloadData()
     }
 }
@@ -70,7 +75,14 @@ extension MainViewController {
         let addNewTodoVC = AddTodoViewController()
         addNewTodoVC.transferNewlyAddedTodo = { newTodo in
             self.todoList.append(newTodo)
-            self.todoCollectionView.reloadItems(at: [IndexPath(item: 2, section: 0)])
+            if let dueDate = newTodo.dueDate {
+                if Calendar.current.isDateInToday(dueDate) {
+                    self.todayTodoList.append(newTodo)
+                } else if dueDate.compare(Date()) == .orderedDescending {
+                    self.scheduledTodoList.append(newTodo)
+                }
+            }
+            self.todoCollectionView.reloadData()
         }
         let navVC = UINavigationController(rootViewController: addNewTodoVC)
         present(navVC, animated: true, completion: nil)
@@ -183,10 +195,14 @@ extension MainViewController: UICollectionViewDataSource {
         cell.listImageContainerView.backgroundColor = title.listBackgroundColor
         cell.listImageView.image = UIImage(systemName: title.listImageName)
         cell.titleLabel.text = title.rawValue
-        if title.rawValue == "전체" {
+        if title == .all {
             cell.numberLabel.text = "\(todoList.count)"
-        } else if title.rawValue == "완료됨" {
+        } else if title == .completed {
             cell.numberLabel.text = "\(completedTodoList.count)"
+        } else if title == .today {
+            cell.numberLabel.text = "\(todayTodoList.count)"
+        } else if title == .scheduled {
+            cell.numberLabel.text = "\(scheduledTodoList.count)"
         } else {
             cell.numberLabel.text = "0"
         }

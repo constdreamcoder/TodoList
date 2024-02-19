@@ -174,6 +174,7 @@ extension EntireTodoListViewController: UITableViewDataSource {
         cell.memoLabel.text = todo.memo
         cell.dueDateLabel.text = todo.dueDate?.getConvertedselectedDate
         cell.tagLabel.text = "#\(todo.tag)"
+        cell.todoImageView.image = loadImageFromDocument(filename: "\(todo.id)")
         
         cell.completeButton.tag = indexPath.row
         updateCompleteButtonImage(cell.completeButton, completed: todo.completed)

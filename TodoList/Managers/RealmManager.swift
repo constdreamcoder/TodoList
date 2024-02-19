@@ -29,6 +29,22 @@ final class RealmManager {
         return readTodoList().where { $0.completed }
     }
     
+    var filteringByToday: Results<TodoModel> {
+        let start = Calendar.current.startOfDay(for: Date())
+        let end = Calendar.current.date(byAdding: .day, value: 1, to: start) ?? Date()
+        
+        let predicate = NSPredicate(format: "dueDate >= %@ && dueDate < %@", start as NSDate, end as NSDate)
+        return readTodoList().filter(predicate)
+    }
+    
+    var filteringByScheduled: Results<TodoModel> {
+        let today = Calendar.current.startOfDay(for: Date())
+        let tomorrow = Calendar.current.date(byAdding: .day, value: 1, to: today) ?? Date()
+        
+        let predicate = NSPredicate(format: "dueDate >= %@", tomorrow as NSDate)
+        return readTodoList().filter(predicate)
+    }
+    
     private init() {}
     
     func addTodo(title: String, memo: String?, tag: String, priority: String?, dueDate: Date?) -> TodoModel? {

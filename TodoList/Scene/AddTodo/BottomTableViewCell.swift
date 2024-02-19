@@ -14,7 +14,6 @@ final class BottomTableViewCell: UITableViewCell {
         let view = UIView()
         [
             titleLabel,
-            subTitleLabel,
             chevronImageView,
         ].forEach { view.addSubview($0) }
         view.backgroundColor = .darkGray
@@ -32,10 +31,17 @@ final class BottomTableViewCell: UITableViewCell {
     
     let subTitleLabel: UILabel = {
         let label = UILabel()
-        label.text = ""
+        label.text = nil
         label.textColor = .white
         label.font = .systemFont(ofSize: 14.0)
         return label
+    }()
+    
+    let selectedImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = nil
+        imageView.contentMode = .scaleToFill
+        return imageView
     }()
     
     let chevronImageView: UIImageView = {
@@ -51,6 +57,12 @@ final class BottomTableViewCell: UITableViewCell {
         view.backgroundColor = .clear
         return view
     }()
+    
+    var cellType: BottomTableViewCellType = .none {
+        didSet {
+            updateTableViewCellConstraints()
+        }
+    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -61,6 +73,25 @@ final class BottomTableViewCell: UITableViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func updateTableViewCellConstraints() {
+        if cellType == .addImage {
+            containerView.addSubview(selectedImageView)
+            
+            selectedImageView.snp.makeConstraints {
+                $0.centerY.equalToSuperview()
+                $0.size.equalTo(20.0)
+                $0.trailing.equalTo(chevronImageView.snp.leading).offset(-8.0)
+            }
+        } else {
+            containerView.addSubview(subTitleLabel)
+
+            subTitleLabel.snp.makeConstraints {
+                $0.centerY.equalToSuperview()
+                $0.trailing.equalTo(chevronImageView.snp.leading).offset(-8.0)
+            }
+        }
     }
 }
 
@@ -80,13 +111,9 @@ extension BottomTableViewCell: UITableViewCellConfigurationProtocol {
             $0.leading.top.bottom.equalToSuperview().inset(16.0)
         }
         
-        subTitleLabel.snp.makeConstraints {
-            $0.centerY.equalToSuperview()
-            $0.trailing.equalTo(chevronImageView.snp.leading).offset(-8.0)
-        }
-        
         chevronImageView.snp.makeConstraints {
             $0.centerY.equalToSuperview()
+            $0.size.equalTo(20.0)
             $0.trailing.equalToSuperview().inset(16.0)
         }
         

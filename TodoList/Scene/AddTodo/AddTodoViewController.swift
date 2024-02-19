@@ -9,10 +9,6 @@ import UIKit
 import SnapKit
 import Toast
 
-protocol PriorityTransferDelegate: AnyObject {
-    func transferNewPriority(priority: String)
-}
-
 final class AddTodoViewController: UIViewController {
     
     lazy var topTableView: UITableView = {
@@ -38,6 +34,7 @@ final class AddTodoViewController: UIViewController {
     var selectedDate: Date?
     var newTag: String = ""
     var newPrioirty: String?
+    var newlySelectedImage: UIImage?
     
     var transferNewlyAddedTodo: ((TodoModel) -> Void)?
     
@@ -88,6 +85,11 @@ extension AddTodoViewController {
                 guard let transferNewlyAddedTodo = transferNewlyAddedTodo else { return }
                 let newTodo = RealmManager.shared.addTodo(title: todoTitle, memo: memo, tag: newTag, priority: newPrioirty, dueDate: selectedDate)
                 transferNewlyAddedTodo(newTodo!)
+                
+                if let newlySelectedImage = newlySelectedImage {
+                    saveImageToDocument(image: newlySelectedImage, filename: "\(newTodo!.id)")
+                }
+                
                 dismiss(animated: true)
             }
         } catch {
@@ -168,6 +170,12 @@ extension AddTodoViewController: UITableViewDelegate {
             priorityVC.navigationItemTitle = titleList[indexPath.row - weight]
             priorityVC.delegate = self
             navigationController?.pushViewController(priorityVC, animated: true)
+        } else if indexPath.row == (3 + weight) {
+            print("이미지 추가 페이지로 이동")
+            let addImageVC = AddImageViewController()
+            addImageVC.navigationItemTitle = titleList[indexPath.row - weight]
+            addImageVC.delegate = self
+            navigationController?.pushViewController(addImageVC, animated: true)
         }
     }
 }
@@ -202,11 +210,17 @@ extension AddTodoViewController: UITableViewDataSource {
             
             cell.titleLabel.text = titleList[indexPath.row - weight]
             if indexPath.row == 0 + weight {
+                cell.cellType = .dueDate
                 cell.subTitleLabel.text = selectedDate?.getConvertedselectedDate
             } else if indexPath.row == 1 + weight {
+                cell.cellType = .tag
                 cell.subTitleLabel.text = newTag
             } else if indexPath.row == 2 + weight {
+                cell.cellType = .priority
                 cell.subTitleLabel.text = newPrioirty
+            } else if indexPath.row == 3 + weight {
+                cell.cellType = .addImage
+                cell.selectedImageView.image = newlySelectedImage
             }
 
             return cell
@@ -243,10 +257,18 @@ extension AddTodoViewController: TableViewCellDelegate {
     }
 }
 
-extension AddTodoViewController: PriorityTransferDelegate {
+extension AddTodoViewController: PriorityDelegate {
     func transferNewPriority(priority: String) {
         self.newPrioirty = priority
         let weight = placeholderList.count + 1
         topTableView.reloadRows(at: [IndexPath(row: weight + 2, section: 0)], with: .automatic)
+    }
+}
+
+extension AddTodoViewController: AddImageDelegate {
+    func transferSelectedImage(_ image: UIImage?) {
+        self.newlySelectedImage = image
+        let weight = placeholderList.count + 1
+        topTableView.reloadRows(at: [IndexPath(row: weight + 3, section: 0)], with: .automatic)
     }
 }

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		001166A02B838ECB001F79C9 /* AddImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0011669F2B838ECB001F79C9 /* AddImageViewController.swift */; };
+		001166A22B8399C5001F79C9 /* BottomTableViewCellType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001166A12B8399C5001F79C9 /* BottomTableViewCellType.swift */; };
+		001166A42B839EDA001F79C9 /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 001166A32B839EDA001F79C9 /* UIViewController+Extension.swift */; };
 		005C9F932B7DA72000E4A2FC /* DateViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9F922B7DA72000E4A2FC /* DateViewController.swift */; };
 		005C9FA62B7DC4A500E4A2FC /* TagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FA52B7DC4A500E4A2FC /* TagViewController.swift */; };
 		005C9FA82B7DC4B100E4A2FC /* PriorityViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */; };
@@ -43,6 +46,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0011669F2B838ECB001F79C9 /* AddImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddImageViewController.swift; sourceTree = "<group>"; };
+		001166A12B8399C5001F79C9 /* BottomTableViewCellType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomTableViewCellType.swift; sourceTree = "<group>"; };
+		001166A32B839EDA001F79C9 /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		005C9F922B7DA72000E4A2FC /* DateViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateViewController.swift; sourceTree = "<group>"; };
 		005C9FA52B7DC4A500E4A2FC /* TagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TagViewController.swift; sourceTree = "<group>"; };
 		005C9FA72B7DC4B100E4A2FC /* PriorityViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriorityViewController.swift; sourceTree = "<group>"; };
@@ -91,6 +97,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0011669E2B838EA3001F79C9 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				0011669F2B838ECB001F79C9 /* AddImageViewController.swift */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
 		005C9F912B7DA70300E4A2FC /* Date */ = {
 			isa = PBXGroup;
 			children = (
@@ -162,6 +176,7 @@
 			isa = PBXGroup;
 			children = (
 				005C9FB82B7E188100E4A2FC /* TitleOrMemo.swift */,
+				001166A12B8399C5001F79C9 /* BottomTableViewCellType.swift */,
 				008C029F2B80ECE600730667 /* Priority */,
 			);
 			path = AddTodo;
@@ -253,6 +268,7 @@
 				00B209B72B7CF9CF00503A16 /* UICollectionViewCell+Extension.swift */,
 				00B209C52B7D1A7400503A16 /* UITableViewCell+Extension.swift */,
 				008C029D2B80EBC900730667 /* Date+Extension.swift */,
+				001166A32B839EDA001F79C9 /* UIViewController+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -276,6 +292,7 @@
 				005C9F912B7DA70300E4A2FC /* Date */,
 				005C9FA22B7DC44900E4A2FC /* Tag */,
 				005C9FA42B7DC45E00E4A2FC /* Priority */,
+				0011669E2B838EA3001F79C9 /* Image */,
 			);
 			path = AddTodo;
 			sourceTree = "<group>";
@@ -366,6 +383,8 @@
 				005C9FA82B7DC4B100E4A2FC /* PriorityViewController.swift in Sources */,
 				00B209BA2B7CFAC400503A16 /* UICollectionViewCellConfigurationProtocol.swift in Sources */,
 				00B209B52B7CF95D00503A16 /* IdentifierProtocol.swift in Sources */,
+				001166A42B839EDA001F79C9 /* UIViewController+Extension.swift in Sources */,
+				001166A22B8399C5001F79C9 /* BottomTableViewCellType.swift in Sources */,
 				00B209CA2B7D31A100503A16 /* BottomTableViewCell.swift in Sources */,
 				00B209A82B7CF0DC00503A16 /* MainViewController.swift in Sources */,
 				005C9FB42B7E093800E4A2FC /* RealmManager.swift in Sources */,
@@ -382,6 +401,7 @@
 				00B209C42B7D1A0F00503A16 /* UITableViewCellConfigurationProtocol.swift in Sources */,
 				005C9FC12B7E247200E4A2FC /* StoredTodoListTableViewCell.swift in Sources */,
 				008C029C2B80BC1A00730667 /* AddTodoError.swift in Sources */,
+				001166A02B838ECB001F79C9 /* AddImageViewController.swift in Sources */,
 				00B209B12B7CF70B00503A16 /* UICollectionViewConfigurationProtocol.swift in Sources */,
 				005C9FA62B7DC4A500E4A2FC /* TagViewController.swift in Sources */,
 				005C9FB92B7E188100E4A2FC /* TitleOrMemo.swift in Sources */,

@@ -43,6 +43,14 @@ final class StoredTodoListTableViewCell: UITableViewCell {
         return label
     }()
     
+    let todoImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "photo")
+        imageView.tintColor = .white
+        imageView.contentMode = .scaleToFill
+        return imageView
+    }()
+    
     lazy var contentStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -60,7 +68,7 @@ final class StoredTodoListTableViewCell: UITableViewCell {
         let label = UILabel()
         label.textColor = .lightGray
         label.font = .systemFont(ofSize: 16.0)
-        label.numberOfLines = 0
+        label.numberOfLines = 4
         return label
     }()
     
@@ -131,7 +139,8 @@ extension StoredTodoListTableViewCell: UITableViewCellConfigurationProtocol {
         [
             completeButton,
             topStackView,
-            contentStackView
+            contentStackView,
+            todoImageView
         ].forEach { contentView.addSubview($0) }
         
         completeButton.snp.makeConstraints {
@@ -148,11 +157,18 @@ extension StoredTodoListTableViewCell: UITableViewCellConfigurationProtocol {
         contentStackView.snp.makeConstraints {
             $0.top.equalTo(topStackView.snp.bottom).offset(8.0)
             $0.leading.equalTo(topStackView)
-            $0.trailing.bottom.equalToSuperview().inset(16.0)
         }
         
         memoLabel.snp.makeConstraints {
             $0.width.equalToSuperview()
+        }
+        
+        todoImageView.snp.makeConstraints {
+            $0.top.equalTo(topStackView.snp.bottom).offset(8.0)
+            $0.leading.equalTo(contentStackView.snp.trailing).offset(8.0)
+            $0.trailing.bottom.equalToSuperview().inset(16.0)
+            $0.width.equalTo(100)
+            $0.height.equalTo(100)
         }
     }
     

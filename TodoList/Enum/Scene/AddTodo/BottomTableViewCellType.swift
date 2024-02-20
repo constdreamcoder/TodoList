@@ -13,5 +13,6 @@ enum BottomTableViewCellType {
     case tag
     case priority
     case addImage
+    case list
     case none
 }

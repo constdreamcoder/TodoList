@@ -12,6 +12,27 @@ final class MainViewController: UIViewController {
     
     lazy var todoCollectionView = UICollectionView(frame: .zero, collectionViewLayout: configureCollectionViewLayout())
     
+    private let myListTitle: UILabel = {
+        let label = UILabel()
+        label.text = "나의 목록"
+        label.textColor = .white
+        label.font = .boldSystemFont(ofSize: 32.0)
+        return label
+    }()
+    
+    lazy var myListTableView: UITableView = {
+        let tableView = UITableView()
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        tableView.register(ListTableViewCell.self, forCellReuseIdentifier: ListTableViewCell.identifier)
+        
+        tableView.backgroundColor = .clear
+        
+        return tableView
+    }()
+    
     lazy var bottomTabView: UIView = {
         let view = UIView()
         [createTodoButton, createListButton].forEach { view.addSubview($0) }
@@ -36,10 +57,15 @@ final class MainViewController: UIViewController {
     
     private let titles: [MainCollectionViewTitleEnum] = MainCollectionViewTitleEnum.allCases
     
+    private let todoCollectionViewSpacing: CGFloat = 16
+    private lazy var todoCollectionViewItemSize = UIScreen.main.bounds.width - (todoCollectionViewSpacing * 3)
+    
     private var todoList: [TodoModel] = []
     private var completedTodoList: [TodoModel] = []
     private var todayTodoList: [TodoModel] = []
     private var scheduledTodoList: [TodoModel] = []
+    
+    private var myListTitleList: [ListModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,6 +81,24 @@ final class MainViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
+        refreshTodoCollectionView()
+        
+        myListTitleList = RealmManager.shared.readListTitleList().map { $0 }
+        
+        myListTableView.reloadData()
+        
+        isCreateTodoButtonAvailable()
+    }
+    
+    private func isCreateTodoButtonAvailable() {
+        if myListTitleList.count > 0 {
+            createTodoButton.isEnabled = true
+        } else {
+            createTodoButton.isEnabled = false
+        }
+    }
+    
+    private func refreshTodoCollectionView() {
         todoList = RealmManager.shared.readTodoList().map { $0 }
         completedTodoList = RealmManager.shared.filteringByCompleted.map { $0 }
         todayTodoList = RealmManager.shared.filteringByToday.map { $0 }
@@ -71,7 +115,7 @@ extension MainViewController {
     
     @objc func createTodoButtonTapped() {
         print(#function)
-        
+                
         let addNewTodoVC = AddTodoViewController()
         addNewTodoVC.transferNewlyAddedTodo = { newTodo in
             self.todoList.append(newTodo)
@@ -83,6 +127,7 @@ extension MainViewController {
                 }
             }
             self.todoCollectionView.reloadData()
+            self.myListTableView.reloadData()
         }
         let navVC = UINavigationController(rootViewController: addNewTodoVC)
         present(navVC, animated: true, completion: nil)
@@ -90,6 +135,15 @@ extension MainViewController {
     
     @objc func createListButtonTapped() {
         print(#function)
+        
+        let addListVC = AddListViewController()
+        addListVC.transferNewList = { newList in
+            self.myListTitleList.append(newList)
+            self.myListTableView.reloadData()
+            self.isCreateTodoButtonAvailable()
+        }
+        let navVC = UINavigationController(rootViewController: addListVC)
+        present(navVC, animated: true)
     }
 }
 
@@ -111,15 +165,30 @@ extension MainViewController: UIViewControllerConfigurationProtocol {
     func configureConstraints() {
         [
             todoCollectionView,
+            myListTitle,
+            myListTableView,
             bottomTabView
         ].forEach { view.addSubview($0) }
         
+        let itemHeight = (todoCollectionViewItemSize / 2) * 0.5
+        let tableHeight = itemHeight * 3 + todoCollectionViewSpacing * 4
         todoCollectionView.snp.makeConstraints {
             $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            $0.height.equalTo(tableHeight)
+        }
+        
+        myListTitle.snp.makeConstraints {
+            $0.top.equalTo(todoCollectionView.snp.bottom).offset(8.0)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(16.0)
+        }
+        
+        myListTableView.snp.makeConstraints {
+            $0.top.equalTo(myListTitle.snp.bottom).offset(8.0)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
+            $0.bottom.equalTo(bottomTabView.snp.top)
         }
         
         bottomTabView.snp.makeConstraints {
-            $0.top.equalTo(todoCollectionView.snp.bottom)
             $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide)
             $0.bottom.equalToSuperview()
             $0.height.equalTo(80)
@@ -153,10 +222,10 @@ extension MainViewController: UIViewControllerConfigurationProtocol {
 extension MainViewController: UICollectionViewConfigurationProtocol {
     
     func configureCollectionViewLayout() -> UICollectionViewLayout {
-        let spacing: CGFloat = 16
+        let spacing = todoCollectionViewSpacing
+        let itemSize = todoCollectionViewItemSize
         
         let layout = UICollectionViewFlowLayout()
-        let itemSize = UIScreen.main.bounds.width - (spacing * 3)
         layout.itemSize = CGSize(width: itemSize / 2, height: (itemSize / 2) * 0.5)
         layout.minimumLineSpacing = spacing
         layout.minimumInteritemSpacing = spacing
@@ -206,6 +275,48 @@ extension MainViewController: UICollectionViewDataSource {
         } else {
             cell.numberLabel.text = "0"
         }
+        
+        return cell
+    }
+}
+
+
+extension MainViewController: UITableViewDelegate {
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let delete = UIContextualAction(style: .destructive, title: "삭제") { action, view, completionHandler in
+            let list = self.myListTitleList[indexPath.row]
+
+            if let error = RealmManager.shared.deleteList(list) {
+                print(error)
+            } else {
+                self.myListTitleList.remove(at: indexPath.row)
+                tableView.reloadData()
+                
+                self.isCreateTodoButtonAvailable()
+                
+                self.refreshTodoCollectionView()
+                completionHandler(true)
+            }
+        }
+                
+        let config = UISwipeActionsConfiguration(actions: [delete])
+        config.performsFirstActionWithFullSwipe = false
+        return config
+    }
+}
+
+extension MainViewController: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return myListTitleList.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ListTableViewCell.identifier, for: indexPath) as? ListTableViewCell else { return UITableViewCell() }
+        
+        let list = myListTitleList[indexPath.row]
+        cell.listTitleLabel.text = list.title
+        cell.todoNumberLabel.text = "\(list.todoList.count)"
         
         return cell
     }

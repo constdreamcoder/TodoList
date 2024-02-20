@@ -27,7 +27,7 @@ final class AddTodoViewController: UIViewController {
     }()
     
     private let placeholderList: [String] = ["제목", "메모"]
-    private let titleList: [String] = ["마감일", "태그", "우선 순위", "이미지 추가"]
+    private let titleList: [String] = ["마감일", "태그", "우선 순위", "이미지 추가", "목록"]
     
     var todoTitle: String = ""
     var memo: String?
@@ -35,6 +35,7 @@ final class AddTodoViewController: UIViewController {
     var newTag: String = ""
     var newPrioirty: String?
     var newlySelectedImage: UIImage?
+    var selectedList = RealmManager.shared.readListTitleList().map { $0 }.first
     
     var transferNewlyAddedTodo: ((TodoModel) -> Void)?
     
@@ -82,8 +83,12 @@ extension AddTodoViewController {
     
         do {
             if try checkError() {
-                guard let transferNewlyAddedTodo = transferNewlyAddedTodo else { return }
-                let newTodo = RealmManager.shared.addTodo(title: todoTitle, memo: memo, tag: newTag, priority: newPrioirty, dueDate: selectedDate)
+                guard 
+                    let transferNewlyAddedTodo = transferNewlyAddedTodo,
+                    let selectedList = selectedList
+                else { return }
+                
+                let newTodo = RealmManager.shared.addTodo(title: todoTitle, memo: memo, tag: newTag, priority: newPrioirty, dueDate: selectedDate, list: selectedList)
                 transferNewlyAddedTodo(newTodo!)
                 
                 if let newlySelectedImage = newlySelectedImage {
@@ -171,11 +176,18 @@ extension AddTodoViewController: UITableViewDelegate {
             priorityVC.delegate = self
             navigationController?.pushViewController(priorityVC, animated: true)
         } else if indexPath.row == (3 + weight) {
-            print("이미지 추가 페이지로 이동")
             let addImageVC = AddImageViewController()
             addImageVC.navigationItemTitle = titleList[indexPath.row - weight]
             addImageVC.delegate = self
             navigationController?.pushViewController(addImageVC, animated: true)
+        } else if indexPath.row == (4 + weight) {
+            let selectListVC = SelectListViewController()
+            selectListVC.navigationItemTitle = titleList[indexPath.row - weight]
+            selectListVC.transferSelectedList = { selectedList in
+                self.selectedList = selectedList
+                tableView.reloadRows(at: [indexPath], with: .automatic)
+            }
+            navigationController?.pushViewController(selectListVC, animated: true)
         }
     }
 }
@@ -221,6 +233,9 @@ extension AddTodoViewController: UITableViewDataSource {
             } else if indexPath.row == 3 + weight {
                 cell.cellType = .addImage
                 cell.selectedImageView.image = newlySelectedImage
+            } else if indexPath.row == 4 + weight {
+                cell.cellType = .list
+                cell.subTitleLabel.text = selectedList?.title
             }
 
             return cell

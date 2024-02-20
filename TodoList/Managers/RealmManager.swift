@@ -13,6 +13,11 @@ final class RealmManager {
     
     private let realm = try! Realm()
 
+    private init() {}
+}
+
+// MARK: - Todo Manager
+extension RealmManager {
     var sortingybyDueDateInAscendingOrder: Results<TodoModel> {
         return readTodoList().sorted(byKeyPath: "dueDate", ascending: true)
     }
@@ -44,15 +49,13 @@ final class RealmManager {
         let predicate = NSPredicate(format: "dueDate >= %@", tomorrow as NSDate)
         return readTodoList().filter(predicate)
     }
-    
-    private init() {}
-    
-    func addTodo(title: String, memo: String?, tag: String, priority: String?, dueDate: Date?) -> TodoModel? {
+        
+    func addTodo(title: String, memo: String?, tag: String, priority: String?, dueDate: Date?, list: ListModel) -> TodoModel? {
         let todo = TodoModel(title: title, memo: memo, tag: tag, priority: priority, dueDate: dueDate, regDate: Date())
         
         do {
             return try realm.write {
-                realm.add(todo)
+                list.todoList.append(todo)
                 print(realm.configuration.fileURL!)
                 return todo
             }
@@ -66,10 +69,10 @@ final class RealmManager {
         return realm.objects(TodoModel.self)
     }
     
-    func updateCompleted(_ item: TodoModel) -> Error? {
+    func updateCompleted(_ todo: TodoModel) -> Error? {
         do {
             return try realm.write {
-                item.completed.toggle()
+                todo.completed.toggle()
                 return nil
             }
         } catch {
@@ -77,10 +80,41 @@ final class RealmManager {
         }
     }
     
-    func delete(_ item: TodoModel) -> Error? {
+    func deleteTodo(_ todo: TodoModel) -> Error? {
         do {
             return try realm.write {
-                realm.delete(item)
+                realm.delete(todo)
+                return nil
+            }
+        } catch {
+            return error
+        }
+    }
+}
+
+// MARK: - List Manager
+extension RealmManager {
+    func addList(newList: ListModel) -> Error? {
+        do {
+            return try realm.write {
+                realm.add(newList)
+                return nil
+            }
+        } catch {
+            return error
+        }
+    }
+    
+    func readListTitleList() -> Results<ListModel> {
+        print(realm.configuration.fileURL)
+        return realm.objects(ListModel.self)
+    }
+    
+    func deleteList(_ list: ListModel) -> Error? {
+        do {
+            return try realm.write {
+                realm.delete(list.todoList)
+                realm.delete(list)
                 return nil
             }
         } catch {

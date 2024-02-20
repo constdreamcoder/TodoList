@@ -142,7 +142,7 @@ extension EntireTodoListViewController: UITableViewDelegate {
         let delete = UIContextualAction(style: .destructive, title: "삭제") { action, view, completionHandler in
             let todo = self.sortedOrFilteredTodoList[indexPath.row]
             
-            if let error = RealmManager.shared.delete(todo) {
+            if let error = RealmManager.shared.deleteTodo(todo) {
                 print(error)
             } else {
                 self.sortedOrFilteredTodoList.remove(at: indexPath.row)

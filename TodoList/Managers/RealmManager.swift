@@ -13,7 +13,14 @@ final class RealmManager {
     
     private let realm = try! Realm()
 
-    private init() {}
+    private init() {
+        do {
+            let version = try schemaVersionAtURL(realm.configuration.fileURL!)
+            print("Schema Version: \(version)")
+        } catch {
+            print(error)
+        }
+    }
 }
 
 // MARK: - Todo Manager
